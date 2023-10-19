@@ -5,14 +5,14 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Configura a chave de criptografia para o JWT
 var chaveCriptografia = Encoding.ASCII.GetBytes(ChaveJWT.ChaveSecreta);
+
+// Configura a autenticação baseada em JWT
 builder.Services.AddAuthentication(auth =>
 {
     auth.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -32,7 +32,7 @@ builder.Services.AddAuthentication(auth =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configuração para ambiente de desenvolvimento
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -40,9 +40,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

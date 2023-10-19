@@ -1,5 +1,4 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.AccessControl;
 using System.Security.Claims;
 using System.Text;
 using fusogram_csharp.Models;
@@ -11,6 +10,7 @@ namespace fusogram_csharp.Services
     {
         public static string CriarToken(Usuario usuario)
         {
+            // Cria um token JWT com base nas informações do usuário
             var tokenHandler = new JwtSecurityTokenHandler();
             var chaveCriptografia = Encoding.ASCII.GetBytes(ChaveJWT.ChaveSecreta);
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -23,10 +23,12 @@ namespace fusogram_csharp.Services
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(chaveCriptografia), SecurityAlgorithms.HmacSha256Signature)
             };
 
+            // Gera o token
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
             return tokenHandler.WriteToken(token);
         }
     }
 }
+
 
