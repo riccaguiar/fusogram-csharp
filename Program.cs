@@ -1,5 +1,7 @@
 using fusogram_csharp;
 using fusogram_csharp.Models;
+using fusogram_csharp.Repository;
+using fusogram_csharp.Repository.Impl;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -13,6 +15,8 @@ builder.Services.AddSwaggerGen();
 
 var connectionstring = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<FusogramContext>(option => option.UseSqlServer(connectionstring));
+
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepositoryImpl>();
 
 // Configura a chave de criptografia para o JWT
 var chaveCriptografia = Encoding.ASCII.GetBytes(ChaveJWT.ChaveSecreta);
@@ -36,6 +40,7 @@ builder.Services.AddAuthentication(auth =>
 });
 
 var app = builder.Build();
+
 
 // Configuração para ambiente de desenvolvimento
 if (app.Environment.IsDevelopment())
