@@ -3,6 +3,9 @@ using fusogram_csharp.Dtos;
 using fusogram_csharp.Models;
 using Microsoft.AspNetCore.Mvc;
 using fusogram_csharp.Repository;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
 
 namespace fusogram_csharp.Controllers
 {
@@ -10,31 +13,36 @@ namespace fusogram_csharp.Controllers
     [Route("api/[controller]")]
     public class UsuarioController : BaseController
     {
-        public readonly ILogger<UsuarioController> _logger;
-        public readonly IUsuarioRepository _usuarioRepository;
+        private readonly ILogger<UsuarioController> _logger;
+        private readonly IUsuarioRepository _usuarioRepository;
+
+        // Construtor que injeta um logger e uma instância do repositório de usuário
         public UsuarioController(ILogger<UsuarioController> logger, IUsuarioRepository usuarioRepository)
         {
             _logger = logger;
             _usuarioRepository = usuarioRepository;
         }
 
+        // Ação que permite obter informações de um usuário autenticado
         [HttpGet]
-        [Authorize]
+        [Authorize] // Requer autenticação para acessar esta ação
         public IActionResult ObterUsuario()
         {
             try
             {
+                // Simula a obtenção de informações de um usuário autenticado
                 Usuario usuario = new Usuario()
                 {
                     Email = "ricardo@fusogram.com",
                     Nome = "Ricardo",
                     Id = 100
                 };
-                return Ok(usuario);
+
+                return Ok(usuario); // Retorna as informações do usuário
             }
             catch (Exception e)
             {
-                _logger.LogError("Ocorreu um erro ao obter o usuário");
+                _logger.LogError("Ocorreu um erro ao obter o usuário"); // Registra um erro no log
                 return StatusCode(StatusCodes.Status500InternalServerError, new ErrorRespostaDto()
                 {
                     Descricao = "Ocorreu o seguinte erro: " + e.Message,
@@ -42,6 +50,8 @@ namespace fusogram_csharp.Controllers
                 });
             }
         }
+
+        // Ação que permite salvar informações de um usuário
         [HttpPost]
         public IActionResult SalvarUsuario([FromBody] Usuario usuario)
         {
@@ -51,6 +61,7 @@ namespace fusogram_csharp.Controllers
                 {
                     var erros = new List<string>();
 
+                    // Valida os dados do usuário
                     if (string.IsNullOrEmpty(usuario.Nome) || string.IsNullOrWhiteSpace(usuario.Nome))
                     {
                         erros.Add("Nome inválido");
@@ -73,15 +84,15 @@ namespace fusogram_csharp.Controllers
                         });
                     }
 
+                    // Salva o usuário no repositório
                     _usuarioRepository.Salvar(usuario);
                 }
 
-
-                return Ok(usuario);
+                return Ok(usuario); // Retorna as informações do usuário salvas
             }
             catch (Exception e)
             {
-                _logger.LogError("Ocorreu um erro ao salvar o usuário");
+                _logger.LogError("Ocorreu um erro ao salvar o usuário"); // Registra um erro no log
                 return StatusCode(StatusCodes.Status500InternalServerError, new ErrorRespostaDto()
                 {
                     Descricao = "Ocorreu o seguinte erro: " + e.Message,

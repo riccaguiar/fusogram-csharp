@@ -14,13 +14,15 @@ namespace fusogram_csharp.Controllers
     {
         private readonly ILogger<LoginController> _logger;
 
+        // Construtor do controlador que injeta um logger
         public LoginController(ILogger<LoginController> logger)
         {
             _logger = logger;
         }
 
+        // Esta ação permite que um usuário efetue o login
         [HttpPost]
-        [AllowAnonymous]
+        [AllowAnonymous] // Permite acesso anônimo, pois esta ação cuida do processo de login
         public IActionResult EfetuarLogin([FromBody] LoginRequisicaoDto loginrequisicao)
         {
             try

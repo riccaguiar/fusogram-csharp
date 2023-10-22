@@ -9,13 +9,18 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Adiciona suporte a controllers na aplicação
 builder.Services.AddControllers();
+// Adiciona suporte a geração de documentação de API com Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Obtém a string de conexão do arquivo de configuração
 var connectionstring = builder.Configuration.GetConnectionString("DefaultConnection");
+// Configura o contexto do Entity Framework Core com a string de conexão
 builder.Services.AddDbContext<FusogramContext>(option => option.UseSqlServer(connectionstring));
 
+// Registra uma implementação do repositório de usuário
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepositoryImpl>();
 
 // Configura a chave de criptografia para o JWT
@@ -41,7 +46,6 @@ builder.Services.AddAuthentication(auth =>
 
 var app = builder.Build();
 
-
 // Configuração para ambiente de desenvolvimento
 if (app.Environment.IsDevelopment())
 {
@@ -49,8 +53,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// Redireciona todas as requisições HTTP para HTTPS
 app.UseHttpsRedirection();
+// Habilita a autenticação baseada em JWT
 app.UseAuthentication();
+// Habilita a autorização
 app.UseAuthorization();
+// Mapeia os controladores para suas respectivas rotas
 app.MapControllers();
 app.Run();

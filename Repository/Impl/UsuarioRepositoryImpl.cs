@@ -2,17 +2,22 @@
 
 namespace fusogram_csharp.Repository.Impl
 {
+    // Classe que implementa a interface IUsuarioRepository para operações de repositório relacionadas a usuários
     public class UsuarioRepositoryImpl : IUsuarioRepository
     {
         private readonly FusogramContext _context;
+
+        // Construtor que recebe o contexto do banco de dados
         public UsuarioRepositoryImpl(FusogramContext context)
         {
-            _context = context;
+            _context = context; // Inicializa o contexto do banco de dados
         }
+
+        // Método para salvar um usuário no banco de dados
         public void Salvar(Usuario usuario)
         {
-            _context.Add(usuario);
-            _context.SaveChanges();
+            _context.Add(usuario);  // Adiciona o usuário ao contexto
+            _context.SaveChanges(); // Salva as alterações no banco de dados
         }
     }
 }
