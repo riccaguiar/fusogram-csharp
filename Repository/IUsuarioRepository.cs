@@ -7,5 +7,7 @@ namespace fusogram_csharp.Repository
     {
         // Método para salvar um usuário no repositório
         public void Salvar(Usuario usuario);
+
+        public bool VerificarEmail(string email);
     }
 }

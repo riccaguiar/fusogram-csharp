@@ -19,5 +19,10 @@ namespace fusogram_csharp.Repository.Impl
             _context.Add(usuario);  // Adiciona o usuário ao contexto
             _context.SaveChanges(); // Salva as alterações no banco de dados
         }
+
+        public bool VerificarEmail(string email)
+        {
+            return _context.Usuarios.Any(u => u.Email == email);
+        }
     }
 }

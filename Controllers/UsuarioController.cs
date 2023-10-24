@@ -84,6 +84,22 @@ namespace fusogram_csharp.Controllers
                         });
                     }
 
+                    usuario.Senha = Utils.MD5Utils.GerarHashMD5(usuario.Senha);
+                    usuario.Email = usuario.Email.ToLower();
+
+                    if (!_usuarioRepository.VerificarEmail(usuario.Email))
+                    {
+                        _usuarioRepository.Salvar(usuario);
+                    }
+                    else
+                    {
+                        return BadRequest(new ErrorRespostaDto()
+                        {
+                            Status = StatusCodes.Status400BadRequest,
+                            Descricao = "Usuário já cadastrado"
+                        });
+                    }
+
                     // Salva o usuário no repositório
                     _usuarioRepository.Salvar(usuario);
                 }
