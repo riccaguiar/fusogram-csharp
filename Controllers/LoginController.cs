@@ -1,6 +1,8 @@
 ﻿using fusogram_csharp.Dtos;
 using fusogram_csharp.Models;
+using fusogram_csharp.Repository;
 using fusogram_csharp.Services;
+using fusogram_csharp.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -13,45 +15,34 @@ namespace fusogram_csharp.Controllers
     public class LoginController : ControllerBase
     {
         private readonly ILogger<LoginController> _logger;
+        private readonly IUsuarioRepository _usuarioRepository;
 
-        // Construtor do controlador que injeta um logger
-        public LoginController(ILogger<LoginController> logger)
+        public LoginController(ILogger<LoginController> logger, IUsuarioRepository usuarioRepository)
         {
             _logger = logger;
+            _usuarioRepository = usuarioRepository;
         }
 
-        // Esta ação permite que um usuário efetue o login
         [HttpPost]
-        [AllowAnonymous] // Permite acesso anônimo, pois esta ação cuida do processo de login
+        [AllowAnonymous]
         public IActionResult EfetuarLogin([FromBody] LoginRequisicaoDto loginrequisicao)
         {
             try
             {
-                // Verifica se a senha e o email não estão vazios e não contêm apenas espaços em branco
-                if (!String.IsNullOrEmpty(loginrequisicao.Senha) || !String.IsNullOrEmpty(loginrequisicao.Email) &&
-                    !String.IsNullOrWhiteSpace(loginrequisicao.Senha) && !String.IsNullOrWhiteSpace(loginrequisicao.Email))
+                if (!String.IsNullOrEmpty(loginrequisicao.Senha) && !String.IsNullOrEmpty(loginrequisicao.Email)
+                && !String.IsNullOrWhiteSpace(loginrequisicao.Senha) && !String.IsNullOrWhiteSpace(loginrequisicao.Email))
                 {
-                    string email = "ricardo@fusogram.com";
-                    string senha = "Senha@123";
-
-                    // Compara o email e a senha fornecidos com valores fixos
-                    if (loginrequisicao.Email == email && loginrequisicao.Senha == senha)
+                    Usuario usuario = _usuarioRepository.GetUsuarioPorLoginSenha(loginrequisicao.Email.ToLower(), MD5Utils.GerarHashMD5(loginrequisicao.Senha));
+                    if (usuario != null)
                     {
-                        // Cria um objeto de usuário
-                        Usuario usuario = new Usuario()
-                        {
-                            Email = email,
-                            Id = 12,
-                            Nome = "Ricardo"
-                        };
 
-                        // Retorna uma resposta de login bem-sucedida com um token
                         return Ok(new LoginRespostaDto()
                         {
-                            Email = email,
+                            Email = usuario.Email,
                             Nome = usuario.Nome,
                             Token = TokenService.CriarToken(usuario)
                         });
+
                     }
                     else
                     {

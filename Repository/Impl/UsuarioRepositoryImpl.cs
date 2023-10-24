@@ -13,6 +13,11 @@ namespace fusogram_csharp.Repository.Impl
             _context = context; // Inicializa o contexto do banco de dados
         }
 
+        public Usuario GetUsuarioPorLoginSenha(string email, string senha)
+        {
+            return _context.Usuarios.FirstOrDefault(u => u.Email == email && u.Senha == senha);
+        }
+
         // Método para salvar um usuário no banco de dados
         public void Salvar(Usuario usuario)
         {
