@@ -16,10 +16,9 @@ namespace fusogram_csharp.Controllers
         public readonly ILogger<UsuarioController> _logger;
         public readonly IUsuarioRepository _usuarioRepository;
 
-        public UsuarioController(ILogger<UsuarioController> logger, IUsuarioRepository usuarioRepository)
+        public UsuarioController(ILogger<UsuarioController> logger, IUsuarioRepository usuarioRepository) : base(usuarioRepository)
         {
             _logger = logger;
-            _usuarioRepository = usuarioRepository;
         }
 
         [HttpGet]
@@ -27,14 +26,12 @@ namespace fusogram_csharp.Controllers
         {
             try
             {
-
-                Usuario usuario = new Usuario()
-                {
-                    Email = "daniel@devaria.com.br",
-                    Nome = "Daniel",
-                    Id = 100
-                };
-                return Ok(usuario);
+                Usuario usuario = LerToken();
+               
+                return Ok(new UsuarioRespostaDto{
+                    Nome = usuario.Nome,
+                    Email = usuario.Email
+                });
 
             }
             catch (Exception e)

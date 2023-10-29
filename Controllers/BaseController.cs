@@ -1,20 +1,32 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using fusogram_csharp.Models;
+using fusogram_csharp.Repository;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace fusogram_csharp.Controllers
 {
-    // Atributo [Authorize] especifica que a autenticação é necessária para acessar as ações deste controlador.
     [Authorize]
     public class BaseController : ControllerBase
     {
-        // Esta classe serve como uma base para outros controladores.
-        // Qualquer controlador derivado de BaseController herda a exigência de autenticação.
+        protected readonly IUsuarioRepository _usuarioRepository;
 
-        // ControllerBase é a classe base para controladores sem suporte a exibições.
-        // Ele fornece funcionalidades básicas para controladores da Web API.
+        public BaseController(IUsuarioRepository usuarioRepository)
+        {
+            _usuarioRepository = usuarioRepository;
+        }
 
-        // O [Authorize] atributo garante que apenas usuários autenticados possam acessar as ações deste controlador.
-
-        // Qualquer ação em controladores derivados de BaseController exigirá autenticação para ser acessada.
+        protected Usuario LerToken()
+        {
+            var idUsuario = User.Claims.Where(c => c.Type == ClaimTypes.Sid).Select(c => c.Value).FirstOrDefault();
+            if (string.IsNullOrEmpty(idUsuario))
+            {
+                return null;
+            }
+            else
+            {
+                return _usuarioRepository.GetUsuarioPorId(int.Parse(idUsuario));
+            }
+        }
     }
 }
