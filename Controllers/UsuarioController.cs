@@ -21,52 +21,15 @@ namespace fusogram_csharp.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
-        public IActionResult ObterUsuario()
+        [HttpPut]
+        public IActionResult AtualizarUsuario([FromForm] UsuarioRequisicaoDto usuarioDto)
         {
             try
             {
-
                 Usuario usuario = LerToken();
-                return Ok(new UsuarioRespostaDto()
-                {
-                    Email = usuario.Email,
-                    Nome = usuario.Nome
-                });
-
-            }
-            catch (Exception e)
-            {
-
-                _logger.LogError("Ocorreu um erro ao obter o usuário");
-                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorRespostaDto()
-                {
-                    Descricao = "Ocorreu o seguinte erro: " + e.Message,
-                    Status = StatusCodes.Status500InternalServerError
-                });
-
-            }
-        }
-
-        [HttpPost]
-        [AllowAnonymous]
-        public IActionResult SalvarUsuario([FromForm] UsuarioRequisicaoDto usuarioDto)
-        {
-            try
-            {
-                var erros = new List<string>();
                 if (usuarioDto != null)
                 {
-
-                    if (String.IsNullOrEmpty(usuarioDto.Email) || String.IsNullOrWhiteSpace(usuarioDto.Email) || !usuarioDto.Email.Contains("@"))
-                    {
-                        erros.Add("Email inválido");
-                    }
-
-                    if (String.IsNullOrEmpty(usuarioDto.Senha) || String.IsNullOrWhiteSpace(usuarioDto.Senha))
-                    {
-                        erros.Add("Senha inválida");
-                    }
+                    var erros = new List<string>();
 
                     if (String.IsNullOrEmpty(usuarioDto.Nome) || String.IsNullOrWhiteSpace(usuarioDto.Nome))
                     {
@@ -81,9 +44,84 @@ namespace fusogram_csharp.Controllers
                             Erros = erros
                         });
                     }
+                    else
+                    {
+                        CosmicService cosmicService = new CosmicService();
+                        usuario.FotoPerfil = cosmicService.EnviarImagem(new ImagemDto()
+                        {
+                            Imagem = usuarioDto.FotoPerfil,
+                            Nome = usuarioDto.Nome.Replace(" ", "")
+                        });
+                        usuario.Nome = usuarioDto.Nome;
+                        _usuarioRepository.AtualizarUsuario(usuario);
+                    }
+                }
+                return Ok("Usuário foi atualizado com sucesso");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("Ocorreu um erro ao atualizar o usuário");
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorRespostaDto()
+                {
+                    Descricao = "Ocorreu o seguinte erro: " + e.Message,
+                    Status = StatusCodes.Status500InternalServerError
+                });
+            }
+        }
 
+        [HttpGet]
+        public IActionResult ObterUsuario()
+        {
+            try
+            {
+                Usuario usuario = LerToken();
+                return Ok(new UsuarioRespostaDto()
+                {
+                    Email = usuario.Email,
+                    Nome = usuario.Nome
+                });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("Ocorreu um erro ao obter o usuário");
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorRespostaDto()
+                {
+                    Descricao = "Ocorreu o seguinte erro: " + e.Message,
+                    Status = StatusCodes.Status500InternalServerError
+                });
+            }
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public IActionResult SalvarUsuario([FromForm] UsuarioRequisicaoDto usuarioDto)
+        {
+            try
+            {
+                if (usuarioDto != null)
+                {
+                    var erros = new List<string>();
+                    if (String.IsNullOrEmpty(usuarioDto.Email) || String.IsNullOrWhiteSpace(usuarioDto.Email) || !usuarioDto.Email.Contains("@"))
+                    {
+                        erros.Add("Email inválido");
+                    }
+                    if (String.IsNullOrEmpty(usuarioDto.Senha) || String.IsNullOrWhiteSpace(usuarioDto.Senha))
+                    {
+                        erros.Add("Senha inválida");
+                    }
+                    if (String.IsNullOrEmpty(usuarioDto.Nome) || String.IsNullOrWhiteSpace(usuarioDto.Nome))
+                    {
+                        erros.Add("Nome inválido");
+                    }
+                    if (erros.Count > 0)
+                    {
+                        return BadRequest(new ErrorRespostaDto()
+                        {
+                            Status = StatusCodes.Status400BadRequest,
+                            Erros = erros
+                        });
+                    }
                     CosmicService cosmicService = new CosmicService();
-
                     Usuario usuario = new Usuario()
                     {
                         Email = usuarioDto.Email,
@@ -91,10 +129,8 @@ namespace fusogram_csharp.Controllers
                         Nome = usuarioDto.Nome,
                         FotoPerfil = cosmicService.EnviarImagem(new ImagemDto { Imagem = usuarioDto.FotoPerfil, Nome = usuarioDto.Nome.Replace(" ", "") }),
                     };
-
                     usuario.Senha = Utils.MD5Utils.GerarHashMD5(usuario.Senha);
                     usuario.Email = usuario.Email.ToLower();
-
                     if (!_usuarioRepository.VerificarEmail(usuario.Email))
                     {
                         _usuarioRepository.Salvar(usuario);
@@ -107,20 +143,17 @@ namespace fusogram_csharp.Controllers
                             Descricao = "Usuário já cadastrado!"
                         });
                     }
-
                 }
                 return Ok("Usuário foi salvo com sucesso");
             }
             catch (Exception e)
             {
-
                 _logger.LogError("Ocorreu um erro ao salvar o usuário");
                 return StatusCode(StatusCodes.Status500InternalServerError, new ErrorRespostaDto()
                 {
                     Descricao = "Ocorreu o seguinte erro: " + e.Message,
                     Status = StatusCodes.Status500InternalServerError
                 });
-
             }
         }
     }

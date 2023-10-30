@@ -2,15 +2,12 @@
 
 namespace fusogram_csharp.Repository
 {
-    // Interface que define operações de repositório relacionadas a usuários
     public interface IUsuarioRepository
     {
-        Usuario GetUsuarioPorId(int v);
-        Usuario GetUsuarioPorLoginSenha(string email, string senha);
-
-        // Método para salvar um usuário no repositório
+        public Usuario GetUsuarioPorId(int id);
+        public Usuario GetUsuarioPorLoginSenha(string email, string senha);
         public void Salvar(Usuario usuario);
-
         public bool VerificarEmail(string email);
+        public void AtualizarUsuario(Usuario usuario);
     }
 }
