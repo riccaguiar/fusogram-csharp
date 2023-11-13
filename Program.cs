@@ -23,6 +23,8 @@ builder.Services.AddDbContext<FusogramContext>(option => option.UseSqlServer(con
 // Registra uma implementação do repositório de usuário
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepositoryImpl>();
 builder.Services.AddScoped<ISeguidorRepository, SeguidorRepositoryImpl>();
+builder.Services.AddScoped<IPublicacaoRepository, PublicacaoRepositoryImpl>();
+
 // Configura a chave de criptografia para o JWT
 var chaveCriptografia = Encoding.ASCII.GetBytes(ChaveJWT.ChaveSecreta);
 
