@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace fusogram_csharp.Controllers
 {
+
     [ApiController]
     [Route("api/[controller]")]
     public class SeguidorController : BaseController
@@ -12,7 +13,8 @@ namespace fusogram_csharp.Controllers
         private readonly ILogger<SeguidorController> _logger;
         private readonly ISeguidorRepository _seguidorRepository;
 
-        public SeguidorController(ILogger<SeguidorController> logger, ISeguidorRepository seguidorRepository, IUsuarioRepository usuarioRepository) : base(usuarioRepository)
+        public SeguidorController(ILogger<SeguidorController> logger,
+            ISeguidorRepository seguidorRepository, IUsuarioRepository usuarioRepository) : base(usuarioRepository)
         {
             _logger = logger;
             _seguidorRepository = seguidorRepository;
@@ -23,46 +25,46 @@ namespace fusogram_csharp.Controllers
         {
             try
             {
-                Usuario usuarioSeguido = _usuarioRepository.GetUsuarioPorId(idSeguido);
-                Usuario usuarioSeguidor = LerToken();
+                Usuario usuarioseguido = _usuarioRepository.GetUsuarioPorId(idSeguido);
+                Usuario usuarioseguidor = LerToken();
 
-                if (usuarioSeguido != null)
+                if (usuarioseguido != null)
                 {
-                    Seguidor seguidor = _seguidorRepository.GetSeguidor(usuarioSeguidor.Id, usuarioSeguido.Id);
+                    Seguidor seguidor = _seguidorRepository.GetSeguidor(usuarioseguidor.Id, usuarioseguido.Id);
                     if (seguidor != null)
                     {
                         _seguidorRepository.Desseguir(seguidor);
-                        return Ok("Usuário desseguido com sucesso");
+                        return Ok("Desseguir realizado com sucesso!");
                     }
                     else
                     {
-                        Seguidor seguidorNovo = new Seguidor()
+                        Seguidor seguidornovo = new Seguidor()
                         {
-                            IdUsuarioSeguido = usuarioSeguido.Id,
-                            IdUsuarioSeguidor = usuarioSeguidor.Id
+                            IdUsuarioSeguido = usuarioseguido.Id,
+                            IdUsuarioSeguidor = usuarioseguidor.Id
                         };
-                        _seguidorRepository.Seguir(seguidorNovo);
-                        return Ok("Usuário seguido com sucesso");
+                        _seguidorRepository.Seguir(seguidornovo);
+                        return Ok("Seguir realizado com sucesso!");
                     }
+
                 }
                 else
                 {
-                    return BadRequest(new ErrorRespostaDto()
-                    {
-                        Status = StatusCodes.Status400BadRequest,
-                        Descricao = "Ocorreu um erro ao Seguir/Desseguir o usuário"
-                    });
+                    return BadRequest("Ocorreu um erro ao Seguir/Desseguir");
                 }
+
             }
             catch (Exception e)
             {
-                _logger.LogError("Ocorreu um erro ao seguir/desseguir o usuário");
+                _logger.LogError("Ocorreu um erro ao seguir/desseguir: " + e.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError, new ErrorRespostaDto()
                 {
-                    Descricao = "Ocorreu o seguinte erro: " + e.Message,
+                    Descricao = "Ocorreu um erro ao seguir/desseguir",
                     Status = StatusCodes.Status500InternalServerError
                 });
             }
         }
+
+
     }
 }

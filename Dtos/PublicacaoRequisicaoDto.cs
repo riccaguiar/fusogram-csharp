@@ -6,3 +6,4 @@
         public IFormFile Foto { get; set; }
     }
 }
+

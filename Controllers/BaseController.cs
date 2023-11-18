@@ -19,6 +19,7 @@ namespace fusogram_csharp.Controllers
         protected Usuario LerToken()
         {
             var idUsuario = User.Claims.Where(c => c.Type == ClaimTypes.Sid).Select(c => c.Value).FirstOrDefault();
+
             if (string.IsNullOrEmpty(idUsuario))
             {
                 return null;
@@ -27,6 +28,7 @@ namespace fusogram_csharp.Controllers
             {
                 return _usuarioRepository.GetUsuarioPorId(int.Parse(idUsuario));
             }
+
         }
     }
 }

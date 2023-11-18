@@ -6,6 +6,10 @@ namespace fusogram_csharp.Repository
     {
         public bool Seguir(Seguidor seguidor);
         public bool Desseguir(Seguidor seguidor);
-        public Seguidor GetSeguidor(int idSeguidor, int idSeguido);
+        public Seguidor GetSeguidor(int idseguidor, int idseguido);
+        int GetQtdeSeguidores(int idUsuario);
+        int GetQtdeSeguindo(int idUsuario);
     }
 }
+
+

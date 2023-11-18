@@ -14,6 +14,7 @@ namespace fusogram_csharp.Controllers
     [Route("api/[controller]")]
     public class LoginController : ControllerBase
     {
+
         private readonly ILogger<LoginController> _logger;
         private readonly IUsuarioRepository _usuarioRepository;
 
@@ -29,34 +30,33 @@ namespace fusogram_csharp.Controllers
         {
             try
             {
-                if (!String.IsNullOrEmpty(loginrequisicao.Senha) && !String.IsNullOrEmpty(loginrequisicao.Email)
-                && !String.IsNullOrWhiteSpace(loginrequisicao.Senha) && !String.IsNullOrWhiteSpace(loginrequisicao.Email))
+                if (!String.IsNullOrEmpty(loginrequisicao.Senha) && !String.IsNullOrEmpty(loginrequisicao.Email) &&
+                    !String.IsNullOrWhiteSpace(loginrequisicao.Senha) && !String.IsNullOrWhiteSpace(loginrequisicao.Email))
                 {
+
                     Usuario usuario = _usuarioRepository.GetUsuarioPorLoginSenha(loginrequisicao.Email.ToLower(), MD5Utils.GerarHashMD5(loginrequisicao.Senha));
+
                     if (usuario != null)
                     {
-
                         return Ok(new LoginRespostaDto()
                         {
                             Email = usuario.Email,
                             Nome = usuario.Nome,
                             Token = TokenService.CriarToken(usuario)
                         });
-
                     }
                     else
                     {
-                        // Retorna uma resposta de erro se o email ou a senha não corresponderem
                         return BadRequest(new ErrorRespostaDto()
                         {
-                            Descricao = "Email ou Senha inválido",
+                            Descricao = "Email ou sennha inválido!",
                             Status = StatusCodes.Status400BadRequest
                         });
                     }
+
                 }
                 else
                 {
-                    // Retorna uma resposta de erro se os campos de login não estiverem preenchidos corretamente
                     return BadRequest(new ErrorRespostaDto()
                     {
                         Descricao = "Usuário não preencheu os campos de login corretamente",
@@ -66,7 +66,6 @@ namespace fusogram_csharp.Controllers
             }
             catch (Exception e)
             {
-                // Registra um erro no log e retorna uma resposta de erro do servidor
                 _logger.LogError("Ocorreu um erro no login: " + e.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError, new ErrorRespostaDto()
                 {
@@ -75,5 +74,7 @@ namespace fusogram_csharp.Controllers
                 });
             }
         }
+
+
     }
 }

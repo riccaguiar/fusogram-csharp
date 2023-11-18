@@ -13,5 +13,6 @@ namespace fusogram_csharp.Models
 
         [ForeignKey("IdUsuarioSeguido")]
         public virtual Usuario UsuarioSeguido { get; private set; }
+
     }
 }

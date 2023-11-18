@@ -12,6 +12,7 @@ namespace fusogram_csharp.Models
         public DbSet<Seguidor> Seguidores { get; set; }
         public DbSet<Publicacao> Publicacaos { get; set; }
         public DbSet<Comentario> Comentarios { get; set; }
+        public DbSet<Curtida> Curtidas { get; set; }
 
     }
 }

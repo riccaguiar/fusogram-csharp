@@ -4,6 +4,7 @@ namespace fusogram_csharp.Repository.Impl
 {
     public class UsuarioRepositoryImpl : IUsuarioRepository
     {
+
         private readonly FusogramContext _context;
 
         public UsuarioRepositoryImpl(FusogramContext context)
@@ -15,6 +16,11 @@ namespace fusogram_csharp.Repository.Impl
         {
             _context.Update(usuario);
             _context.SaveChanges();
+        }
+
+        public List<Usuario> GetUsuarioNome(string nome)
+        {
+            return _context.Usuarios.Where(u => u.Nome.Contains(nome)).ToList();
         }
 
         public Usuario GetUsuarioPorId(int id)
@@ -35,7 +41,8 @@ namespace fusogram_csharp.Repository.Impl
 
         public bool VerificarEmail(string email)
         {
-            return _context.Usuarios.Any(usuario => usuario.Email == email);
+            return _context.Usuarios.Any(u => u.Email == email);
         }
     }
 }
+
